@@ -3,9 +3,6 @@
   "main": "./lib/slash-closer",
   "version": "0.5.0",
   "description": "Automatically close HTML tags when typing </",
-  "activationEvents": [
-    "slash-closer:close"
-  ],
   "repository": "https://github.com/postcasio/slash-closer",
   "license": "MIT",
   "engines": {

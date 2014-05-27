@@ -36,29 +36,37 @@ getClosingTag = (editor, start) ->
 
 module.exports =
 	activate: (state) ->
-		atom.workspaceView.command "slash-closer:close", @close
+		@attachEvents()
 
 	deactivate: ->
 
-	close: (e) ->
-		editor = atom.workspaceView.getActiveView().getEditor()
-		end = editor.getCursorBufferPosition()
-		scopes = editor.scopesForBufferPosition(end)
+	attachEvents: (e) ->
+		console.log "Attaching slash-closer"
+		atom.workspace.eachEditor (editor) ->
+			buffer = editor.getBuffer()
 
-		if end.column > 0 and isHTMLScope(scopes)
-			start = [end.row, end.column - 1]
-			prev = editor.getTextInBufferRange([start, end])
+			buffer.on 'changed', (e) ->
+				console.log e
+				if e.newText == '/'
+					console.log 'closing'
+					cursor = editor.getCursorBufferPosition()
+					scopes = editor.scopesForBufferPosition(cursor)
 
-			if prev is '<'
-				tag = getClosingTag(editor, start)
+					if cursor.column > 0 and isHTMLScope(scopes)
+						prev = editor.getTextInBufferRange([
+							[cursor.row, cursor.column - 2],
+							[cursor.row, cursor.column - 1]
+						])
 
-				if tag
-					editor.insertText('/')
+						console.log('prev: ' + prev)
+						if prev is '<'
+							tag = getClosingTag(editor, cursor)
 
-					editor.transact ->
-						editor.insertText(tag + '>')
-						editor.autoIndentSelectedRows()
+							if tag
+								setTimeout ->
+									editor.transact ->
+										editor.insertText(tag + '>')
+										editor.autoIndentSelectedRows()
+								, 10
 
-					return
-
-		e.abortKeyBinding()
+								return
