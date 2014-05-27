@@ -10,8 +10,7 @@ ignoredTags = [
 isHTMLScope = (scopes) ->
 	return 'html' in scopes.pop().split('.')
 
-getClosingTag = (editor, start) ->
-	text = editor.getTextInBufferRange([[0, 0], start])
+getClosingTag = (text) ->
 	match = text.match(regex)
 	stack = []
 
@@ -49,14 +48,14 @@ module.exports =
 					cursor = editor.getCursorBufferPosition()
 					scopes = editor.scopesForBufferPosition(cursor)
 
-					if cursor.column > 0 and isHTMLScope(scopes)
+					if cursor.column > 1 and isHTMLScope(scopes)
 						prev = editor.getTextInBufferRange([
 							[cursor.row, cursor.column - 2],
 							[cursor.row, cursor.column - 1]
 						])
 
 						if prev is '<'
-							tag = getClosingTag(editor, cursor)
+							tag = getClosingTag(editor.getTextInBufferRange([[0, 0], cursor]))
 
 							if tag
 								setTimeout ->
@@ -64,5 +63,3 @@ module.exports =
 										editor.insertText(tag + '>')
 										editor.autoIndentSelectedRows()
 								, 10
-
-								return
