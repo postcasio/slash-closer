@@ -1,0 +1,15 @@
+{
+  "name": "slash-closer",
+  "main": "./lib/slash-closer",
+  "version": "0.2.0",
+  "description": "Automatically close HTML tags when typing </",
+  "activationEvents": [
+    "slash-closer:close"
+  ],
+  "repository": "https://github.com/postcasio/slash-closer",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {}
+}
