@@ -3,6 +3,13 @@ regex = /<\/?\w+((\s+\w+(\s*=\s*(?:".*?"|'.*?'|[^'">\s]+))?)+\s*|\s*)\/?>/gm
 isHTMLScope = (scopes) ->
 	return 'html' in scopes.pop().split('.')
 
+ignoredTags = [
+	'area', 'base', 'br', 'col',
+	'command', 'embed', 'hr', 'img',
+	'input', 'keygen', 'link', 'meta',
+	'param', 'source', 'track', 'wbr'
+]
+
 module.exports =
 	activate: (state) ->
 		atom.workspaceView.command "slash-closer:close", @close.bind this
@@ -28,9 +35,13 @@ module.exports =
 							stack.pop()
 						else if tag.substr(tag.length - 2, 1) != '/'
 							if tag.indexOf(' ') >= 0
-								stack.push(tag.substr(1, tag.indexOf(' ') - 1))
+								tag = tag.substr(1, tag.indexOf(' ') - 1)
 							else
-								stack.push(tag.substr(1, tag.indexOf('>') - 1))
+								tag = tag.substr(1, tag.indexOf('>') - 1)
+
+							if tag not in ignoredTags
+								stack.push(tag)
+
 					if stack.length
 						editor.insertText('/' + stack.pop() + '>')
 					else
