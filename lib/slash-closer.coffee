@@ -43,11 +43,11 @@ module.exports =
 								stack.push(tag)
 
 					if stack.length
-						editor.insertText('/' + stack.pop() + '>')
+						editor.transact ->
+							editor.insertText('/' + stack.pop() + '>')
+							editor.autoIndentSelectedRows()
 					else
 						editor.insertText('/')
-
-					editor.autoIndentSelectedRows()
 
 					return
 
