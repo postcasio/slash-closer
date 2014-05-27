@@ -41,14 +41,11 @@ module.exports =
 	deactivate: ->
 
 	attachEvents: (e) ->
-		console.log "Attaching slash-closer"
 		atom.workspace.eachEditor (editor) ->
 			buffer = editor.getBuffer()
 
 			buffer.on 'changed', (e) ->
-				console.log e
 				if e.newText == '/'
-					console.log 'closing'
 					cursor = editor.getCursorBufferPosition()
 					scopes = editor.scopesForBufferPosition(cursor)
 
@@ -58,7 +55,6 @@ module.exports =
 							[cursor.row, cursor.column - 1]
 						])
 
-						console.log('prev: ' + prev)
 						if prev is '<'
 							tag = getClosingTag(editor, cursor)
 
