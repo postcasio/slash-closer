@@ -1,3 +1,6 @@
+path = null
+CompositeDisposable = null
+
 regex = /<\/?\w+((\s+\w+(\s*=\s*(?:".*?"|'.*?'|[^'">\s]+))?)+\s*|\s*)\/?>/gm
 
 ignoredTags = [
@@ -35,15 +38,17 @@ getClosingTag = (text) ->
 
 module.exports =
 	activate: (state) ->
-		@attachEvents()
+		path = require 'path'
+		{CompositeDisposable} = require path.join atom.packages.resourcePath, 'node_modules', 'event-kit'
 
-	deactivate: ->
+		@subscriptions = new CompositeDisposable
 
-	attachEvents: (e) ->
-		atom.workspace.eachEditor (editor) ->
+		@subscriptions.add atom.workspace.observeTextEditors (editor) =>
 			buffer = editor.getBuffer()
 
-			buffer.on 'changed', (e) ->
+			editorSubscriptions = new CompositeDisposable
+
+			editorSubscriptions.add buffer.onDidChange (e) ->
 				if e.newText == '/'
 					cursor = editor.getCursorBufferPosition()
 					scopes = editor.scopesForBufferPosition(cursor)
@@ -58,8 +63,18 @@ module.exports =
 							tag = getClosingTag(editor.getTextInBufferRange([[0, 0], cursor]))
 
 							if tag
-								setTimeout ->
+								process.nextTick ->
 									editor.transact ->
 										editor.insertText(tag + '>')
 										editor.autoIndentSelectedRows()
-								, 10
+
+
+			editorSubscriptions.add buffer.onDidDestroy (e) ->
+				editorSubscriptions.dispose()
+
+			@subscriptions.add editorSubscriptions
+
+
+
+	deactivate: ->
+		@subscriptions.dispose()
