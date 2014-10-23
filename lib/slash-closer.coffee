@@ -1,5 +1,4 @@
-path = null
-CompositeDisposable = null
+{CompositeDisposable} = require 'event-kit'
 
 regex = /<\/?\w+((\s+\w+(\s*=\s*(?:".*?"|'.*?'|[^'">\s]+))?)+\s*|\s*)\/?>/gm
 
@@ -38,9 +37,6 @@ getClosingTag = (text) ->
 
 module.exports =
 	activate: (state) ->
-		path = require 'path'
-		{CompositeDisposable} = require path.join atom.packages.resourcePath, 'node_modules', 'event-kit'
-
 		@subscriptions = new CompositeDisposable
 
 		@subscriptions.add atom.workspace.observeTextEditors (editor) =>

@@ -6,7 +6,9 @@
   "repository": "https://github.com/postcasio/slash-closer",
   "license": "MIT",
   "engines": {
-    "atom": ">0.50.0"
+    "atom": ">=0.139.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "event-kit": "^0.7.2"
+  }
 }
